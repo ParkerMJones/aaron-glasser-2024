@@ -26,9 +26,7 @@ export default function Philosophy() {
         Back
       </Link>
       <div className="mt-16 flex flex-col gap-y-8">
-        <h1 className="text-neutral-200 leading-6 text-3xl">
-          {selectedWriting.title}
-        </h1>
+        <h1 className="text-neutral-200 text-3xl">{selectedWriting.title}</h1>
         {selectedWriting.document ? (
           <>
             <a
