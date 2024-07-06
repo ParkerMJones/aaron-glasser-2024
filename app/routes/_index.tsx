@@ -36,7 +36,7 @@ export default function Index() {
   return (
     <div
       ref={containerRef}
-      className="text-neutral-200 leading-6 flex flex-col flex-1 px-8 max-h-[calc(100vh-100px)]"
+      className="text-neutral-200 leading-6 flex flex-col flex-1 px-8 max-h-[calc(100svh-100px)]"
     >
       <div
         ref={ref}
@@ -47,9 +47,9 @@ export default function Index() {
           I am currently a PhD candidate in the philosophy department at the
           University of Michigan. My broad research interests include philosophy
           of mind, action, moral psychology, cognitive science, and nonwestern
-          philosophy. More specifically, I am concerned with issues surrounding
-          salience, mental action, affect, control, memory, and mental illness.
-          Outside of academia, I like to make/curate movies.
+          philosophy. These usually lead me to questions about attention and
+          agency, with a special focus on our relationship with what is salient
+          to us. Outside of academia, I like to make/curate movies.
         </p>
         <p className="text-center mx-auto">
           email:{" "}
