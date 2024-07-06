@@ -3,7 +3,7 @@ import { curatedPrograms } from "~/utils/programs";
 
 export default function CuratedList() {
   return (
-    <div className="flex flex-col items-start p-20 text-soft-white gap-y-6">
+    <div className="flex flex-col items-start px-8 py-20 sm:px-20 text-soft-white gap-y-6">
       <p className="flex flex-wrap justify-start">
         I am currently serving on the board of{" "}
         <a
@@ -22,7 +22,7 @@ export default function CuratedList() {
       </p>
       <div className="flex flex-wrap justify-around gap-y-8 mt-10">
         {curatedPrograms.map((program) => (
-          <li className="mb-2 list-none w-1/2" key={program.id}>
+          <li className="mb-2 list-none w-[45%]" key={program.id}>
             <Link
               className="hover:underline"
               to={`/movies/curated/${program.id}`}

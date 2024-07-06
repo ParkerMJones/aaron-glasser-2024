@@ -53,7 +53,7 @@ export default function Philosophy() {
                       <span>{writing.reference}</span>
                     </div>
                   </Link>
-                  <div className="ml-6 pr-6 text-justify overflow-auto no-scrollbar">
+                  <div className="sm:ml-6 sm:pr-6 text-left overflow-auto no-scrollbar">
                     <Dropdown content={writing.abstract}></Dropdown>
                   </div>
                 </li>

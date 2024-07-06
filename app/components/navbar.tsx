@@ -14,7 +14,7 @@ const Navbar = () => {
         to="/philosophy"
         style={{ marginLeft: -20 }}
         className={clsx(
-          "flex justify-center mb-3 pb-1 text-base sm:text-2xl text-[hsl(220,20%,97%)] border-b hover:border-soft-white",
+          "flex justify-center mb-3 pb-1 text-lg sm:text-2xl text-[hsl(220,20%,97%)] border-b hover:border-soft-white",
           isPhilisophy ? "border-soft-white" : "border-transparent"
         )}
       >
@@ -38,7 +38,7 @@ const Navbar = () => {
       <Link
         to="/movies"
         className={clsx(
-          "flex justify-center mb-3 pb-1 text-base sm:text-2xl text-[hsl(220,20%,97%)] border-b hover:border-soft-white",
+          "flex justify-center mb-3 pb-1 text-lg sm:text-2xl text-[hsl(220,20%,97%)] border-b hover:border-soft-white",
           isMovies ? "border-soft-white" : "border-transparent"
         )}
       >

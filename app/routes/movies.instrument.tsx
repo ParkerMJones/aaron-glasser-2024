@@ -57,16 +57,10 @@ export default function ColorBox() {
   });
 
   useEffect(() => {
-    function handleResize() {
-      setWindowDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    }
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
+    setWindowDimensions({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
   }, []);
 
   const sketchWrapper = (p5: P5CanvasInstance) => {
@@ -75,7 +69,7 @@ export default function ColorBox() {
 
   return (
     <div className="max-h-full p-12 pb-3 text-center">
-      <p className="text-justify pb-8 text-soft-white">
+      <p className="text-left pb-8 text-soft-white">
         The image instrument is a MIDI-controlled live video editing tool I
         built in Max MSP/Jitter. It can be used as a rhythm-oriented video
         editing software as well as for live performance with more traditional

@@ -43,7 +43,7 @@ export default function Index() {
         className="mx-auto my-0 pt-16 py-0 w-fit text-center leading-6 flex flex-col items-center gap-y-6"
       >
         <h2>Aaron Glasser</h2>
-        <p className="text-justify max-w-[90ch]">
+        <p className="text-left max-w-[90ch]">
           I am currently a PhD candidate in the philosophy department at the
           University of Michigan. My broad research interests include philosophy
           of mind, action, moral psychology, cognitive science, and nonwestern

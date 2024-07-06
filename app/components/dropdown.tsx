@@ -15,7 +15,7 @@ const Dropdown = ({ content }: { content: string }) => {
   };
 
   return (
-    <div className="ml-4 sm:ml-12 mt-4">
+    <div className="sm:ml-12 mt-4">
       <button
         className={clsx(
           "text-md w-fit rounded-xl px-2 py-1 hover:bg-zinc-700 text-neutral-200 leading-6 flex items-center gap-x-1.5 cursor-pointer",
@@ -33,7 +33,7 @@ const Dropdown = ({ content }: { content: string }) => {
         />
       </button>
       <motion.div
-        className="max-w-[80ch] text-neutral-100 leading-7 text-base sm:text-md ml-8 pr-6 mt-4 text-justify overflow-auto no-scrollbar"
+        className="sm:max-w-[80ch] text-neutral-100 leading-7 sm:leading-8 text-lg ml-8 sm:pr-6 mt-4 text-left overflow-auto no-scrollbar"
         initial={false}
         animate={isOpen ? "open" : "closed"}
         variants={variants}

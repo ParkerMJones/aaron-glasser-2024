@@ -46,7 +46,7 @@ export default function Philosophy() {
             />
           </>
         ) : (
-          <p className="text-justify text-base leading-7 max-w-[90ch]">
+          <p className="text-left text-base leading-7 max-w-[90ch]">
             This paper is currently under review. If interested, please email me
             at{" "}
             <a
