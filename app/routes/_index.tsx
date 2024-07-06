@@ -1,48 +1,67 @@
-import type { MetaFunction } from "@remix-run/node";
+import { useMeasure } from "@uidotdev/usehooks";
+import { useEffect, useState } from "react";
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
-  ];
+const AdaptiveImage = ({
+  containerHeight,
+  height,
+}: {
+  containerHeight: number;
+  height: number;
+}) => {
+  return (
+    <img
+      className="object-contain max-w-full py-6 flex-1"
+      style={{
+        height: containerHeight - height,
+      }}
+      src="/BioPic.jpeg"
+      alt="Aaron Glasser"
+    />
+  );
 };
 
 export default function Index() {
+  const [ref, { height }] = useMeasure<HTMLDivElement>();
+  const [containerRef, { height: bodyHeight }] = useMeasure<HTMLDivElement>();
+
+  const [containerHeight, setContainerHeight] = useState<number>(200);
+  const [textHeight, setTextHeight] = useState<number>(100);
+
+  useEffect(() => {
+    if (!bodyHeight || !height) return;
+    setContainerHeight(bodyHeight);
+    setTextHeight(height);
+  }, [bodyHeight, height]);
+
   return (
-    <div className="font-sans p-4">
-      <h1 className="text-3xl">Welcome to Remix</h1>
-      <ul className="list-disc mt-4 pl-6 space-y-2">
-        <li>
+    <div
+      ref={containerRef}
+      className="text-neutral-200 leading-6 flex flex-col flex-1 px-8 max-h-[calc(100vh-100px)]"
+    >
+      <div
+        ref={ref}
+        className="mx-auto my-0 pt-16 py-0 w-fit text-center leading-6 flex flex-col items-center gap-y-6"
+      >
+        <h2>Aaron Glasser</h2>
+        <p className="text-justify max-w-[90ch]">
+          I am currently a PhD candidate in the philosophy department at the
+          University of Michigan. My broad research interests include philosophy
+          of mind, action, moral psychology, cognitive science, and nonwestern
+          philosophy. More specifically, I am concerned with issues surrounding
+          salience, mental action, affect, control, memory, and mental illness.
+          Outside of academia, I like to make/curate movies.
+        </p>
+        <p className="text-center mx-auto">
+          email:{" "}
           <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/quickstart"
-            rel="noreferrer"
+            className="underline decoration-soft-white"
+            href="mailto:agmail@umich.edu"
           >
-            5m Quick Start
+            agmail@umich.edu
           </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/tutorial"
-            rel="noreferrer"
-          >
-            30m Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/docs"
-            rel="noreferrer"
-          >
-            Remix Docs
-          </a>
-        </li>
-      </ul>
+        </p>
+      </div>
+      <AdaptiveImage containerHeight={containerHeight} height={textHeight} />
     </div>
   );
 }

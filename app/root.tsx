@@ -1,15 +1,34 @@
 import {
   Links,
   Meta,
+  MetaFunction,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
 import "./tailwind.css";
+import Navbar from "./components/navbar";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Aaron Glasser" },
+    { name: "Hello, I'm Aaron", content: "Hello, I'm Aaron" },
+  ];
+};
+
+export function links() {
+  return [
+    {
+      rel: "icon",
+      type: "image/png",
+      href: "/7306.jpeg",
+    },
+  ];
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="no-scrollbar bg-neutral-950">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -26,5 +45,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  );
 }
