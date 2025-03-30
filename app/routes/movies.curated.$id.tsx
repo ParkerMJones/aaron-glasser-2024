@@ -10,7 +10,7 @@ export default function SelectedProgram() {
   const selectedProgram = Number(param.id);
 
   return (
-    <div className="mt-12 pb-24 px-6 sm:ml-14 max-w-[100ch] text-neutral-900 flex flex-col gap-y-10">
+    <div className="mt-6 sm:mt-12 pb-24 px-4 sm:ml-14 max-w-[100ch] text-neutral-900 flex flex-col gap-y-6 sm:gap-y-10">
       <Link
         to="/movies/curated"
         className="text-neutral-700 hover:underline underline-offset-4 flex items-center gap-x-2"
@@ -18,7 +18,7 @@ export default function SelectedProgram() {
         <ArrowLeft size={24} />
         Back
       </Link>
-      <h2 className="font-bold mt-4">
+      <h2 className="font-bold mt-2 sm:mt-4">
         {curatedPrograms[selectedProgram].title}
       </h2>
       <div>

@@ -9,7 +9,7 @@ const Navbar = () => {
   const isHome = leaves.every((l) => !l.length);
 
   return (
-    <div className="grid grid-cols-3 w-full justify-items-center items-end pt-12 border-b border-b-neutral-800">
+    <div className="grid grid-cols-3 w-full justify-items-center items-end pt-12 border-b border-b-neutral-300">
       <Link
         to="/philosophy"
         className={clsx(

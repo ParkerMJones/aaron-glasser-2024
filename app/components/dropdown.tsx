@@ -15,25 +15,25 @@ const Dropdown = ({ content }: { content: string }) => {
   };
 
   return (
-    <div className="sm:ml-8 mt-2">
+    <div className="mt-2 sm:mt-4">
       <button
         className={clsx(
-          "text-md w-fit rounded-lg px-3 py-2 hover:bg-neutral-200 text-neutral-900 leading-6 flex items-center gap-x-1.5 cursor-pointer",
-          isOpen ? "bg-neutral-200" : "bg-transparent"
+          "text-md w-fit rounded-lg px-2 sm:px-3 py-2 sm:hover:bg-[oklch(0.955_0_0)] text-neutral-700 leading-6 flex items-center gap-x-1.5 cursor-pointer",
+          isOpen ? "bg-[oklch(0.955_0_0)]" : "bg-transparent"
         )}
         onClick={handleToggle}
       >
         Abstract
         <ChevronDown
           className={clsx(
-            "transition-transform duration-500",
+            "transition-transform duration-500 text-neutral-700",
             isOpen && "transform rotate-180"
           )}
           size={20}
         />
       </button>
       <motion.div
-        className="sm:max-w-[80ch] text-neutral-800 leading-6 sm:leading-7 text-md ml-8 sm:pr-6 mt-4 text-left overflow-auto no-scrollbar"
+        className="sm:max-w-[80ch] text-neutral-900 leading-7 text-md ml-2 mt-4 sm:ml-8 sm:pr-6 text-left overflow-auto no-scrollbar"
         initial={false}
         animate={isOpen ? "open" : "closed"}
         variants={variants}

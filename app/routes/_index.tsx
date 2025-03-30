@@ -40,7 +40,7 @@ export default function Index() {
     >
       <div
         ref={ref}
-        className="mx-auto my-0 pt-10 sm:pt-16 pb-0 w-fit text-center leading-6 flex flex-col items-center gap-y-6"
+        className="mx-auto my-0 pt-8 sm:pt-12 pb-0 w-fit text-center leading-6 flex flex-col items-center gap-y-6"
       >
         <h2 className="text-2xl font-medium">Aaron Glasser</h2>
         <p className="text-left max-w-[90ch]">

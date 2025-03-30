@@ -19,16 +19,16 @@ export default function Philosophy() {
           <TabsTrigger value="papers">Papers</TabsTrigger>
           <TabsTrigger value="teaching">Teaching</TabsTrigger>
         </TabsList>
-        <TabsContent value="papers" className="py-12">
+        <TabsContent value="papers" className="py-6 sm:py-12">
           <div>
-            <div className="px-8 text-neutral-900 leading-6">
-              <ul className="list-none space-y-6">
+            <div className="px-4 sm:px-8 text-neutral-900 leading-6">
+              <ul className="list-none space-y-6 sm:space-y-8">
                 {sortedWritings.map((writing) => {
                   const authorsSplit = writing.author.split(",");
                   return (
                     <li key={writing.id}>
                       <Link
-                        className="flex text-lg mr-12 text-neutral-800 hover:underline decoration-neutral-600"
+                        className="flex text-lg sm:mr-12 text-neutral-800 hover:underline decoration-neutral-600"
                         to={`/philosophy/${writing.id}`}
                         key={writing.id}
                       >
@@ -74,9 +74,9 @@ export default function Philosophy() {
             </div>
           </div>
         </TabsContent>
-        <TabsContent value="teaching" className="py-12">
-          <div className="px-8 text-neutral-900 leading-6">
-            <ul className="list-none space-y-6">
+        <TabsContent value="teaching" className="py-6 sm:py-12">
+          <div className="px-4 sm:px-8 text-neutral-900 leading-6">
+            <ul className="list-none space-y-6 sm:space-y-8">
               <li className="text-neutral-900">
                 Seeing Through Traditions (Syllabus)
               </li>

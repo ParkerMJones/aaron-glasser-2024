@@ -68,7 +68,7 @@ export default function ColorBox() {
   };
 
   return (
-    <div className="max-h-full p-12 pb-3 text-center">
+    <div className="max-h-full pt-6 px-4 sm:px-8 sm:pt-12 pb-3 text-center">
       <p className="text-left pb-8 text-neutral-900">
         The image instrument is a MIDI-controlled live video editing tool I
         built in Max MSP/Jitter. It can be used as a rhythm-oriented video
