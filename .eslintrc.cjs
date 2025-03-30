@@ -19,7 +19,6 @@ module.exports = {
     commonjs: true,
     es6: true,
   },
-  ignorePatterns: ["!**/.server", "!**/.client"],
 
   // Base config
   extends: ["eslint:recommended"],
@@ -68,14 +67,14 @@ module.exports = {
       },
       extends: [
         "plugin:@typescript-eslint/recommended",
-        "plugin:import/recommended",
+        // "plugin:import/recommended",
         "plugin:import/typescript",
       ],
     },
 
     // Node
     {
-      files: [".eslintrc.cjs"],
+      files: [".eslintrc.js", "plugin-remix.js"],
       env: {
         node: true,
       },

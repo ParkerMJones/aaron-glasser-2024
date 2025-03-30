@@ -7,7 +7,7 @@ export default function MoviesList() {
     <div className="m-8 mt-20 pb-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-evenly h-fit">
       {videos.map((video) => (
         <div key={video.id}>
-          <div className="m-auto text-center text-soft-white pb-1">
+          <div className="m-auto text-center text-neutral-900 pb-1">
             {video.title}
           </div>
           <div className="aspect-video">

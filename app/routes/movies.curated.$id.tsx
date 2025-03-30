@@ -10,10 +10,10 @@ export default function SelectedProgram() {
   const selectedProgram = Number(param.id);
 
   return (
-    <div className="mt-12 pb-24 px-6 sm:ml-14 max-w-[100ch] text-soft-white flex flex-col gap-y-10">
+    <div className="mt-12 pb-24 px-6 sm:ml-14 max-w-[100ch] text-neutral-900 flex flex-col gap-y-10">
       <Link
         to="/movies/curated"
-        className="text-[#f0f0f0] hover:underline underline-offset-4 flex items-center gap-x-2"
+        className="text-neutral-700 hover:underline underline-offset-4 flex items-center gap-x-2"
       >
         <ArrowLeft size={24} />
         Back

@@ -9,7 +9,14 @@ export default function Philosophy() {
   if (!selectedWriting) {
     return (
       <div className="px-12">
-        <h1 className="mt-16 px-6 text-neutral-200 leading-6 text-4xl">
+        <Link
+          to="/philosophy"
+          className="text-neutral-700 hover:underline underline-offset-4 flex items-center gap-x-2 mt-8 sm:mt-12 w-fit"
+        >
+          <ArrowLeft size={24} />
+          Back
+        </Link>
+        <h1 className="mt-8 sm:mt-12 text-neutral-900 leading-6 text-md">
           Writing not found
         </h1>
       </div>
@@ -17,22 +24,22 @@ export default function Philosophy() {
   }
 
   return (
-    <div className="px-12 text-neutral-200 leading-6 pb-12">
+    <div className="px-5 sm:px-12 text-neutral-900 leading-6 pb-12">
       <Link
         to="/philosophy"
-        className="text-[#f0f0f0] hover:underline underline-offset-4 flex items-center gap-x-2 mt-12"
+        className="text-neutral-700 hover:underline underline-offset-4 flex items-center gap-x-2 mt-8 sm:mt-12 w-fit"
       >
         <ArrowLeft size={24} />
         Back
       </Link>
-      <div className="mt-16 flex flex-col gap-y-8">
-        <h1 className="text-neutral-200 text-3xl">{selectedWriting.title}</h1>
+      <div className="mt-8 sm:mt-12 flex flex-col gap-y-8">
+        <h1 className="text-neutral-900 text-3xl">{selectedWriting.title}</h1>
         {selectedWriting.document ? (
           <>
             <a
               href={selectedWriting.document}
               download={selectedWriting.documentName}
-              className="border-b border-transparent hover:border-b-soft-white w-fit cursor-pointer flex items-center gap-x-2"
+              className="border-b border-transparent hover:border-b-neutral-700 w-fit cursor-pointer flex items-center gap-x-2"
             >
               <p className="text-md">Download</p>
               <Download color="white" size={16} />
@@ -48,7 +55,7 @@ export default function Philosophy() {
             This paper is currently under review. If interested, please email me
             at{" "}
             <a
-              className="underline decoration-soft-white"
+              className="underline decoration-neutral-700"
               href="mailto:agmail@umich.edu"
             >
               agmail@umich.edu

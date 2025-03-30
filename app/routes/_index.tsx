@@ -36,13 +36,13 @@ export default function Index() {
   return (
     <div
       ref={containerRef}
-      className="text-neutral-200 leading-6 flex flex-col flex-1 px-8 max-h-[calc(100svh-100px)]"
+      className="text-neutral-800 leading-6 flex flex-col flex-1 px-8 max-h-[calc(100svh-100px)]"
     >
       <div
         ref={ref}
-        className="mx-auto my-0 pt-16 py-0 w-fit text-center leading-6 flex flex-col items-center gap-y-6"
+        className="mx-auto my-0 pt-10 sm:pt-16 pb-0 w-fit text-center leading-6 flex flex-col items-center gap-y-6"
       >
-        <h2>Aaron Glasser</h2>
+        <h2 className="text-2xl font-medium">Aaron Glasser</h2>
         <p className="text-left max-w-[90ch]">
           I am currently a PhD candidate in the philosophy department at the
           University of Michigan. My broad research interests include philosophy
@@ -54,7 +54,7 @@ export default function Index() {
         <p className="text-center mx-auto">
           email:{" "}
           <a
-            className="underline decoration-soft-white"
+            className="underline decoration-neutral-800"
             href="mailto:agmail@umich.edu"
           >
             agmail@umich.edu

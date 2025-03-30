@@ -6,6 +6,16 @@ import FolkPDF from "~/assets/documents/folk.pdf";
 
 const writings = [
   {
+    id: 7,
+    title: "Steering Salience",
+    source: "",
+    date: "under review",
+    reference: "",
+    author: "Glasser",
+    abstract:
+      "Something is salient when it spontaneously grabs an agent's attention— the crack of thunder; a forceful memory; the eyes of a stranger. As a cue for attention, salience plays a crucial role in subsequent cognition. Amidst a recent flurry of research across disciplines, two apparently contradictory aspects of salience have emerged: 1) agents can be evaluated for what is salient to them and 2) salience is a passive process. Proponents of 1) leverage salience to capture unique virtues and vices for attending (in)appropriately, while proponents of 2) claim salience to occur prior any opportunity for agential control. This poses a problem: how can agents be evaluated for salience if it is a passive process? I argue that this tension rests on an incomplete understanding of salience that can be disambiguated through an articulation of how salience is shaped over time. If we understand salience as a learning process, we can accommodate both intuitions without tension.",
+  },
+  {
     id: 1,
     title: "Affect in Action",
     source: "",
