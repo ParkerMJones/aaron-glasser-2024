@@ -3,6 +3,7 @@ import Catch22PDF from "~/assets/documents/catch_22.pdf";
 import ShowerEffectPDF from "~/assets/documents/shower_effect.pdf";
 import WillPoweredPDF from "~/assets/documents/will_powered.pdf";
 import FolkPDF from "~/assets/documents/folk.pdf";
+import AffectInActionPDF from "~/assets/documents/affect_in_action.pdf";
 
 const writings = [
   {
@@ -18,12 +19,13 @@ const writings = [
   {
     id: 1,
     title: "Affect in Action",
-    source: "",
+    source: "Australasian Journal of Philosophy",
     reference: "",
-    date: "under review",
-    author: "Glasser,Irving",
+    date: "forthcoming",
+    author: "Glasser & Irving",
+    document: AffectInActionPDF,
     abstract:
-      "Obsessive thinking is a problem case for the philosophy of mental action, insofar as it both (1) feels passive but (2) manifests our agency. Our solution to this “Puzzle of Obsessive Action” rests on a fundamental distinction between what we call “occurrent” and “aggregative” agency. Occurrent agency reflects the agent’s capacity to guide her current behavior and thoughts as they unfold over time. We argue that obsessive thinking is a form of occurrent mental agency, since the agent’s attention is guided at the personal level, endorsed, and resistible. Our paper’s first contribution is therefore to argue for the heterodox views that obsessive thinking is active and, therefore, that action can be grounded in affect. Why, then, do obsessive thoughts feel passive? We argue that this is because they undermine aggregative agency. Aggregative agency reflects the agent’s capacity to organize and distribute her actions over time. Although each episode of obsessive thinking is guided, the sheer frequency of those episodes undermines the agent's ability to organize her mental life. Obsessive thinking is therefore occurrently active but aggregatively passive. Our paper’s second contribution is therefore to use obsessive thinking as a wedge to pry these forms of agency apart.",
+      "Obsessive thinking is a problem case for the philosophy of mental action, insofar as it both (1) feels passive but (2) manifests our agency. Our solution to this “Puzzle of Obsessive Thinking” rests on a fundamental distinction between what we call “occurrent” and “aggregative” agency. Occurrent agency reflects the agent’s capacity to guide her current behavior and thoughts as they unfold over time. We argue that obsessive thinking is a form of occurrent mental agency, since the agent’s attention is guided at the personal level, endorsed, and resistible. Our paper’s first contribution is therefore to argue for the heterodox views that obsessive thinking is active and, thus, for a de-intellectualized, emotional, form of action. Why, then, do obsessive thoughts feel passive? We argue that this is because they undermine aggregative agency. Aggregative agency reflects the agent’s capacity to organize and distribute her actions over time. Although each episode of obsessive thinking is guided, the sheer frequency of those episodes undermines the agent's ability to organize her mental actions. Obsessive thinking is therefore occurrently active but aggregatively passive. Our paper’s second contribution is therefore to use obsessive thinking as a wedge to pry these forms of agency apart.",
   },
   {
     id: 2,
