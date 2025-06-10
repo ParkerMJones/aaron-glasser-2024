@@ -34,13 +34,6 @@ export default function Philosophy() {
       </Link>
       <div className="mt-8 sm:mt-12 flex flex-col gap-y-8">
         <h1 className="text-neutral-900 text-3xl">{selectedWriting.title}</h1>
-        {selectedWriting.id === 1 ? (
-          <p>
-            This paper is forthcoming in the{" "}
-            <i>Australasian Journal of Philosophy.</i>
-            Please cite published version.
-          </p>
-        ) : null}
         {selectedWriting.document ? (
           <>
             <a
