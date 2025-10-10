@@ -19,8 +19,7 @@ export default function Movies() {
         className="text-left w-fit text-xl hover:underline decoration-neutral-700"
         to="/movies/instrument"
       >
-        Image Instrument <br />
-        Demo
+        Image Instrument
       </Link>
     </div>
   );

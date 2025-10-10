@@ -2,6 +2,7 @@ import { P5CanvasInstance } from "@p5-wrapper/react";
 import { NextReactP5Wrapper } from "@p5-wrapper/next";
 import { useEffect, useState } from "react";
 import { ClientOnly } from "remix-utils/client-only";
+import ReactPlayer from "react-player";
 
 function sketch(p5: P5CanvasInstance, w: number, h: number) {
   let hValue = 120;
@@ -68,20 +69,37 @@ export default function ColorBox() {
   };
 
   return (
-    <div className="max-h-full pt-6 px-4 sm:px-8 sm:pt-12 pb-3 text-center">
-      <p className="text-left pb-8 text-neutral-900">
-        The image instrument is a MIDI-controlled live video editing tool I
+    <div className="flex flex-col gap-y-8 pt-6 px-4 sm:px-8 sm:pt-12 text-center pb-12">
+      <p className="text-left text-neutral-900">
+        Most of my creative work since 2020 revolves around what I call the
+        “image instrument.” This is a MIDI-controlled live video editing tool I
         built in Max MSP/Jitter. It can be used as a rhythm-oriented video
-        editing software as well as for live performance with more traditional
-        musical instruments. Each channel is assigned a different video, which
-        can be modulated by various parameters and subsequently “played.” Here
-        is a rudimentary, still-image only demo built for this website by Parker
-        Jones (in P5.js) that gives an idea of what the image instrument can do.
-        Click in the box and press any key on your keyboard.
+        editing software as well as for live performance with traditional
+        instruments. Each channel is assigned a different video, which can be
+        modulated by various parameters and subsequently “played.” Below this
+        text is a rudimentary, still-image only demo built for this website by
+        Parker Jones (in P5.js) that gives an idea of what the image instrument
+        can do. Click in the box and press any key on your keyboard. Below that
+        demo is a piece I made with it.
       </p>
-      <ClientOnly fallback={<div />}>
-        {() => <NextReactP5Wrapper sketch={sketchWrapper} />}
-      </ClientOnly>
+      <div className="mx-auto w-full max-w-screen-md flex flex-col items-center gap-y-8">
+        <ClientOnly fallback={<div />}>
+          {() => <NextReactP5Wrapper sketch={sketchWrapper} />}
+        </ClientOnly>
+        <div className="aspect-video w-full">
+          <ClientOnly fallback={<div />}>
+            {() => (
+              <ReactPlayer
+                url="https://vimeo.com/1123952777"
+                width="100%"
+                height="100%"
+                controls={true}
+                light={true}
+              />
+            )}
+          </ClientOnly>
+        </div>
+      </div>
     </div>
   );
 }
