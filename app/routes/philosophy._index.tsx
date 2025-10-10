@@ -24,7 +24,7 @@ export default function Philosophy() {
             <div className="px-4 sm:px-8 text-neutral-900 leading-6">
               <ul className="list-none space-y-6 sm:space-y-8">
                 {sortedWritings.map((writing) => {
-                  const authorsSplit = writing.author.split(",");
+                  const authorsSplit = writing.author.split(/[,&]/).map(s => s.trim());
                   return (
                     <li key={writing.id}>
                       <Link
@@ -39,8 +39,9 @@ export default function Philosophy() {
                                 <span
                                   key={index}
                                   className={clsx(
-                                    authorsSplit.length > 1 &&
-                                      author === "Glasser"
+                                    writing.author === "Glasser"
+                                      ? "font-normal"
+                                      : author === "Glasser"
                                       ? "font-extrabold"
                                       : "font-normal"
                                   )}
