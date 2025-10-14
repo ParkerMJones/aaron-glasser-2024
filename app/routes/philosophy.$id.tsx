@@ -1,6 +1,6 @@
 import { Link, useParams } from "@remix-run/react";
 import { writings } from "~/utils/writings";
-import { ArrowLeft, Download } from "react-feather";
+import { ArrowLeft, Download, ExternalLink } from "react-feather";
 
 export default function Philosophy() {
   const { id } = useParams();
@@ -24,7 +24,7 @@ export default function Philosophy() {
   }
 
   return (
-    <div className="px-5 sm:px-12 text-neutral-900 leading-6 pb-12">
+    <div className="px-5 sm:px-12 text-neutral-900 leading-6 sm:h-auto flex flex-col sm:block pb-12 sm:pb-0">
       <Link
         to="/philosophy"
         className="text-neutral-700 hover:underline underline-offset-4 flex items-center gap-x-2 mt-8 sm:mt-12 w-fit"
@@ -32,22 +32,34 @@ export default function Philosophy() {
         <ArrowLeft size={24} />
         Back
       </Link>
-      <div className="mt-8 sm:mt-12 flex flex-col gap-y-8">
+      <div className="mt-8 sm:mt-12 flex flex-col gap-y-8 sm:pb-12">
         <h1 className="text-neutral-900 text-3xl">{selectedWriting.title}</h1>
         {selectedWriting.document ? (
           <>
-            <a
-              href={selectedWriting.document}
-              download={selectedWriting.documentName}
-              className="border-b border-transparent hover:border-b-neutral-700 w-fit cursor-pointer flex items-center gap-x-2"
-            >
-              <p className="text-md">Download</p>
-              <Download color="black" size={16} />
-            </a>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a
+                href={selectedWriting.document}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sm:hidden border-b border-transparent hover:border-b-neutral-700 w-fit cursor-pointer flex items-center gap-x-2"
+              >
+                <p className="text-md">View PDF</p>
+                <ExternalLink color="black" size={16} />
+              </a>
+              <a
+                href={selectedWriting.document}
+                download={selectedWriting.documentName}
+                className="hidden sm:flex border-b border-transparent hover:border-b-neutral-700 w-fit cursor-pointer items-center gap-x-2"
+              >
+                <p className="text-md">Download</p>
+                <Download color="black" size={16} />
+              </a>
+            </div>
+            {/* Hide iframe on mobile (iOS Safari doesn't handle PDF iframes well) */}
             <iframe
               title={selectedWriting.title}
               src={selectedWriting.document}
-              className="w-full h-[90vh]"
+              className="hidden sm:block w-full sm:h-[95vh]"
             />
           </>
         ) : (

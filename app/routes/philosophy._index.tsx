@@ -61,7 +61,7 @@ export default function Philosophy() {
                           <span>
                             {writing.date ? `(${writing.date}).` : ""}
                           </span>{" "}
-                          <span className="font-bold">{writing.title}.</span>{" "}
+                          <span>{writing.title}.</span>{" "}
                           <span className="italic text-sm text-zinc-400">
                             {writing.source}
                           </span>{" "}
@@ -81,7 +81,6 @@ export default function Philosophy() {
         <TabsContent value="teaching" className="py-6 sm:py-12">
           <div className="px-4 sm:px-8 text-neutral-900 leading-6">
             <ul className="list-none space-y-6 sm:space-y-8">
-              <li className="text-neutral-900">Ways of Seeing (Syllabus)</li>
               <li className="text-neutral-900">
                 Psychiatric Ethics (Summer, 2025)
               </li>
@@ -92,6 +91,7 @@ export default function Philosophy() {
               <li className="text-neutral-900">
                 Critical Reasoning (Fall 2022; Winter, 2023)
               </li>
+              <li className="text-neutral-900">Ways of Seeing (Syllabus)</li>
             </ul>
             <p className="mt-12 text-sm">
               Please{" "}
