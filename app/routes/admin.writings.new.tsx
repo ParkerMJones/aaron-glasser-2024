@@ -1,31 +1,43 @@
-import { json, redirect, type LoaderFunctionArgs, type ActionFunctionArgs } from "@remix-run/node";
+import { put } from "@vercel/blob";
+import { redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link } from "@remix-run/react";
+import { unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
 import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
 import { writings } from "~/db/schema";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireAdminUser(request);
-  return json({});
+  return {};
 }
 
 export async function action({ request }: ActionFunctionArgs) {
   await requireAdminUser(request);
-  const formData = await request.formData();
+
+  const uploadHandler = unstable_createMemoryUploadHandler({ maxPartSize: 10_000_000 });
+  const formData = await unstable_parseMultipartFormData(request, uploadHandler);
+
+  const file = formData.get("document") as File | null;
+  let documentUrl: string | null = null;
+  let documentName: string | null = null;
+
+  if (file && file.size > 0) {
+    const blob = await put(file.name, file, { access: "public" });
+    documentUrl = blob.url;
+    documentName = blob.pathname;
+  }
+
   const db = getDb();
-
-  const data = {
+  await db.insert(writings).values({
     title: formData.get("title") as string,
-    source: formData.get("source") as string || null,
-    date: formData.get("date") as string || null,
-    reference: formData.get("reference") as string || null,
-    author: formData.get("author") as string || null,
-    document: formData.get("document") as string || null,
-    documentName: formData.get("documentName") as string || null,
-    abstract: formData.get("abstract") as string || null,
-  };
-
-  await db.insert(writings).values(data);
+    source: (formData.get("source") as string) || null,
+    date: (formData.get("date") as string) || null,
+    reference: (formData.get("reference") as string) || null,
+    author: (formData.get("author") as string) || null,
+    document: documentUrl,
+    documentName: documentName,
+    abstract: (formData.get("abstract") as string) || null,
+  });
 
   return redirect("/admin/writings");
 }
@@ -57,7 +69,7 @@ export default function NewWriting() {
             </Link>
           </div>
 
-          <Form method="post" className="space-y-6 bg-white shadow sm:rounded-lg p-6">
+          <Form method="post" encType="multipart/form-data" className="space-y-6 bg-white shadow sm:rounded-lg p-6">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700">
                 Title *
@@ -123,26 +135,14 @@ export default function NewWriting() {
 
             <div>
               <label htmlFor="document" className="block text-sm font-medium text-gray-700">
-                Document Path
+                PDF Document
               </label>
               <input
-                type="text"
+                type="file"
                 name="document"
                 id="document"
-                placeholder="/documents/filename.pdf"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="documentName" className="block text-sm font-medium text-gray-700">
-                Document Name
-              </label>
-              <input
-                type="text"
-                name="documentName"
-                id="documentName"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                accept=".pdf"
+                className="mt-1 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
             </div>
 

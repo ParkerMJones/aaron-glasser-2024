@@ -1,12 +1,10 @@
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { useMeasure } from "@uidotdev/usehooks";
-import { useEffect, useState } from "react";
 import { getDb } from "~/db/client";
 import { siteContent } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader() {
   const db = getDb();
 
   const bioHeading = await db.select().from(siteContent).where(eq(siteContent.key, "bio_heading")).limit(1);
@@ -20,63 +18,44 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
-const AdaptiveImage = ({
-  containerHeight,
-  height,
-}: {
-  containerHeight: number;
-  height: number;
-}) => {
-  return (
-    <img
-      className="object-contain max-w-full py-6 flex-1"
-      style={{
-        height: containerHeight - height,
-      }}
-      src="/BioPic.jpeg"
-      alt="Aaron Glasser"
-    />
-  );
-};
-
 export default function Index() {
   const { bioHeading, bioText, email } = useLoaderData<typeof loader>();
-  const [ref, { height }] = useMeasure<HTMLDivElement>();
-  const [containerRef, { height: bodyHeight }] = useMeasure<HTMLDivElement>();
-
-  const [containerHeight, setContainerHeight] = useState<number>(200);
-  const [textHeight, setTextHeight] = useState<number>(100);
-
-  useEffect(() => {
-    if (!bodyHeight || !height) return;
-    setContainerHeight(bodyHeight);
-    setTextHeight(height);
-  }, [bodyHeight, height]);
 
   return (
-    <div
-      ref={containerRef}
-      className="text-neutral-800 leading-6 flex flex-col flex-1 px-8 max-h-[calc(100svh-100px)]"
-    >
-      <div
-        ref={ref}
-        className="mx-auto my-0 pt-8 sm:pt-12 pb-0 w-fit text-center leading-6 flex flex-col items-center gap-y-6"
-      >
+    <div className="text-neutral-800 leading-6 flex flex-col sm:flex-row flex-1 px-8 pt-8 sm:pt-12 gap-x-12 gap-y-8">
+      <div className="flex flex-col gap-y-6 sm:max-w-[55ch]">
         <h2 className="text-2xl font-medium">{bioHeading}</h2>
-        <p className="text-left max-w-[90ch]">
-          {bioText}
-        </p>
-        <p className="text-center mx-auto">
-          email:{" "}
-          <a
-            className="underline decoration-neutral-800"
-            href={`mailto:${email}`}
-          >
-            {email}
-          </a>
-        </p>
+        <p className="text-left">{bioText}</p>
+        <div className="flex flex-col gap-y-2 text-sm">
+          <p>
+            email:{" "}
+            <a
+              className="underline decoration-neutral-800"
+              href={`mailto:${email}`}
+            >
+              {email}
+            </a>
+          </p>
+          <p>
+            cv:{" "}
+            <a
+              className="underline decoration-neutral-800"
+              href="/documents/cv.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              download
+            </a>
+          </p>
+        </div>
       </div>
-      <AdaptiveImage containerHeight={containerHeight} height={textHeight} />
+      <div className="flex-1 flex items-start justify-center sm:justify-start">
+        <img
+          className="object-contain max-w-full max-h-[70vh]"
+          src="/BioPic.jpeg"
+          alt="Aaron Glasser"
+        />
+      </div>
     </div>
   );
 }
