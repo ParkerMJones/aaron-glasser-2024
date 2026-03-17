@@ -1,10 +1,23 @@
-import { Link, useParams } from "@remix-run/react";
-import { writings } from "~/utils/writings";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
 import { ArrowLeft, Download, ExternalLink } from "react-feather";
+import { getDb } from "~/db/client";
+import { writings } from "~/db/schema";
+import { eq } from "drizzle-orm";
+
+export async function loader({ params }: LoaderFunctionArgs) {
+  const db = getDb();
+  const writing = await db
+    .select()
+    .from(writings)
+    .where(eq(writings.id, Number(params.id)))
+    .limit(1);
+
+  return json({ writing: writing[0] || null });
+}
 
 export default function Philosophy() {
-  const { id } = useParams();
-  const selectedWriting = writings.find((writing) => writing.id === Number(id));
+  const { writing: selectedWriting } = useLoaderData<typeof loader>();
 
   if (!selectedWriting) {
     return (

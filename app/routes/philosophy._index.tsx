@@ -1,17 +1,21 @@
-import { Link } from "@remix-run/react";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
 import clsx from "clsx";
 import { Dropdown } from "~/components/dropdown";
-import { writings } from "~/utils/writings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { getDb } from "~/db/client";
+import { writings } from "~/db/schema";
+import { desc } from "drizzle-orm";
 
-const sortedWritings = writings.sort((a, b) => {
-  const dateA = a.date ? new Date(a.date).getTime() : -Infinity;
-  const dateB = b.date ? new Date(b.date).getTime() : -Infinity;
+export async function loader({ request }: LoaderFunctionArgs) {
+  const db = getDb();
+  const allWritings = await db.select().from(writings).orderBy(desc(writings.id));
 
-  return dateB - dateA; // Sort in descending order (most recent dates first)
-});
+  return json({ writings: allWritings });
+}
 
 export default function Philosophy() {
+  const { writings: sortedWritings } = useLoaderData<typeof loader>();
   return (
     <div>
       <Tabs defaultValue="papers">
