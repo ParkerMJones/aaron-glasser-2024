@@ -8,6 +8,7 @@ import { writings } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { invalidateCacheTags } from "~/lib/vercel-cache.server";
 
+
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireAdminUser(request);
   const db = getDb();
@@ -42,13 +43,21 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function AdminWritings() {
   const { writings: allWritings } = useLoaderData<typeof loader>();
   const [items, setItems] = useState(allWritings);
-  const fetcher = useFetcher();
+  const [isDirty, setIsDirty] = useState(false);
+  const fetcher = useFetcher<typeof action>();
+  const isSaving = fetcher.state !== "idle";
 
-  const handleDragEnd = () => {
+  const handleReorder = (newOrder: typeof items) => {
+    setItems(newOrder);
+    setIsDirty(true);
+  };
+
+  const handleSaveOrder = () => {
     fetcher.submit(
       { intent: "reorder-all", ids: items.map((w) => w.id).join(",") },
       { method: "post" }
     );
+    setIsDirty(false);
   };
 
   return (
@@ -107,26 +116,36 @@ export default function AdminWritings() {
         <div className="px-4 py-6 sm:px-0">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Writings</h2>
-            <Link
-              to="/admin/writings/new"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-            >
-              Add New Writing
-            </Link>
+            <div className="flex items-center gap-3">
+              {isDirty && (
+                <button
+                  onClick={handleSaveOrder}
+                  disabled={isSaving}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isSaving ? "Saving..." : "Save Order"}
+                </button>
+              )}
+              <Link
+                to="/admin/writings/new"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              >
+                Add New Writing
+              </Link>
+            </div>
           </div>
 
           <div className="bg-white shadow overflow-hidden sm:rounded-md">
             <Reorder.Group
               axis="y"
               values={items}
-              onReorder={setItems}
+              onReorder={handleReorder}
               className="divide-y divide-gray-200 list-none"
             >
               {items.map((writing) => (
                 <Reorder.Item
                   key={writing.id}
                   value={writing}
-                  onDragEnd={handleDragEnd}
                   className="bg-white"
                 >
                   <div className="px-4 py-4 flex items-center sm:px-6">
