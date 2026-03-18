@@ -23,7 +23,7 @@ export async function action({ request }: ActionFunctionArgs) {
   let documentName: string | null = null;
 
   if (file && file.size > 0) {
-    const blob = await put(file.name, file, { access: "public" });
+    const blob = await put(file.name, file, { access: "public", allowOverwrite: true });
     documentUrl = blob.url;
     documentName = blob.pathname;
   }
