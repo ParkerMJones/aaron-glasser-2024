@@ -1,16 +1,21 @@
 import { json } from "@remix-run/node";
+import { Fragment } from "react";
 import { Link, useLoaderData } from "@remix-run/react";
 import clsx from "clsx";
 import { Dropdown } from "~/components/dropdown";
 import { getDb } from "~/db/client";
 import { writings } from "~/db/schema";
-import { desc } from "drizzle-orm";
+import { asc } from "drizzle-orm";
 
 export async function loader() {
   const db = getDb();
-  const allWritings = await db.select().from(writings).orderBy(desc(writings.id));
-
-  return json({ writings: allWritings });
+  const allWritings = await db.select().from(writings).orderBy(asc(writings.sortOrder));
+  return json({ writings: allWritings }, {
+    headers: {
+      "Cache-Control": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400",
+      "Cache-Tag": "writings",
+    },
+  });
 }
 
 const IN_DEVELOPMENT = [
@@ -40,9 +45,8 @@ export default function Research() {
                 <div>
                   {authorsSplit.map((author, index) => {
                     return (
-                      <>
+                      <Fragment key={`${writing.id}-${index}`}>
                         <span
-                          key={`${writing.id}-${index}`}
                           className={clsx(
                             writing.author === "Glasser"
                               ? "font-normal"
@@ -56,12 +60,14 @@ export default function Research() {
                         <span>
                           {index === authorsSplit.length - 2
                             ? " & "
-                            : " "}
+                            : index < authorsSplit.length - 1
+                            ? ", "
+                            : ""}
                         </span>
-                      </>
+                      </Fragment>
                     );
                   })}
-                  <span>
+                  {" "}<span>
                     {writing.date ? `(${writing.date}).` : ""}
                   </span>{" "}
                   <span>{writing.title}.</span>{" "}

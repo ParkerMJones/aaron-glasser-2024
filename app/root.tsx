@@ -13,6 +13,7 @@ import {
 import "./tailwind.css";
 import Navbar from "./components/navbar";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export const meta: MetaFunction = () => {
   return [
@@ -95,15 +96,22 @@ export default function App() {
     setIsHydrated(true);
   }, []);
 
-  // Delay rendering content during navigation to prevent flash
-  const showContent = isHydrated && navigation.state === "idle";
+  // Only hide during client-side navigations, not on initial render
+  const isNavigating = isHydrated && navigation.state !== "idle";
 
   return (
     <>
       {!isAdminRoute && <Navbar />}
-      <div style={{ opacity: showContent ? 1 : 0, transition: "opacity 50ms" }}>
-        <Outlet />
-      </div>
+      {isNavigating ? null : (
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.15 }}
+        >
+          <Outlet />
+        </motion.div>
+      )}
     </>
   );
 }

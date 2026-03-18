@@ -1,11 +1,12 @@
 import { put } from "@vercel/blob";
-import { json, redirect, type LoaderFunctionArgs, type ActionFunctionArgs } from "@remix-run/node";
+import { json, type LoaderFunctionArgs, type ActionFunctionArgs } from "@remix-run/node";
 import { unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
 import { writings } from "~/db/schema";
 import { eq } from "drizzle-orm";
+import { invalidateCacheTags } from "~/lib/vercel-cache.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireAdminUser(request);
@@ -26,8 +27,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await unstable_parseMultipartFormData(request, uploadHandler);
 
   const file = formData.get("document") as File | null;
-  let documentUrl: string | null = (formData.get("existingDocument") as string) || null;
-  let documentName: string | null = (formData.get("existingDocumentName") as string) || null;
+  const existingDoc = formData.get("existingDocument") as string;
+  // Only preserve blob URLs, not local paths
+  let documentUrl: string | null = existingDoc?.startsWith("https://") ? existingDoc : null;
+  let documentName: string | null = documentUrl ? (formData.get("existingDocumentName") as string) || null : null;
 
   if (file && file.size > 0) {
     const blob = await put(file.name, file, { access: "public" });
@@ -47,11 +50,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
     abstract: (formData.get("abstract") as string) || null,
   }).where(eq(writings.id, Number(params.id)));
 
-  return redirect("/admin/writings");
+  await invalidateCacheTags("writings");
+  return json({ success: true });
 }
 
 export default function EditWriting() {
   const { writing } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher<typeof action>();
+  const isSubmitting = fetcher.state !== "idle";
+  const saved = fetcher.data?.success && fetcher.state === "idle";
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -79,7 +86,7 @@ export default function EditWriting() {
             </Link>
           </div>
 
-          <Form method="post" encType="multipart/form-data" className="space-y-6 bg-white shadow sm:rounded-lg p-6">
+          <fetcher.Form method="post" encType="multipart/form-data" className="space-y-6 bg-white shadow sm:rounded-lg p-6">
             <input type="hidden" name="existingDocument" value={writing.document || ""} />
             <input type="hidden" name="existingDocumentName" value={writing.documentName || ""} />
 
@@ -191,15 +198,25 @@ export default function EditWriting() {
               />
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end items-center gap-3">
+              {saved && (
+                <span className="text-sm text-green-600">Saved!</span>
+              )}
               <button
                 type="submit"
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                disabled={isSubmitting}
+                className="inline-flex justify-center items-center gap-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Save Changes
+                {isSubmitting && (
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                )}
+                {isSubmitting ? "Saving..." : "Save Changes"}
               </button>
             </div>
-          </Form>
+          </fetcher.Form>
         </div>
       </div>
     </div>

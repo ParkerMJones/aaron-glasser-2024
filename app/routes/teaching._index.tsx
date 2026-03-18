@@ -1,43 +1,29 @@
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { asc } from "drizzle-orm";
 import { Dropdown } from "~/components/dropdown";
+import { getDb } from "~/db/client";
+import { courses } from "~/db/schema";
 
-const COURSES = [
-  {
-    name: "Psychiatric Ethics",
-    semesters: "Summer, 2025",
-    description: "",
-  },
-  {
-    name: "Introduction to Cognitive Science",
-    semesters: "Winter, 2024",
-    description: "",
-  },
-  {
-    name: "Bioethics",
-    semesters: "Fall, 2023",
-    description: "",
-  },
-  {
-    name: "Critical Reasoning",
-    semesters: "Fall 2022; Winter, 2023",
-    description: "",
-  },
-  {
-    name: "Ways of Seeing",
-    semesters: "",
-    description: "",
-  },
-];
-
-const SYLLABI: { name: string; file: string }[] = [
-  // { name: "Bioethics Syllabus (Fall 2023)", file: "/documents/syllabus-bioethics-2023.pdf" },
-];
+export async function loader() {
+  const db = getDb();
+  const allCourses = await db.select().from(courses).orderBy(asc(courses.sortOrder));
+  return json({ courses: allCourses }, {
+    headers: {
+      "Cache-Control": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400",
+      "Cache-Tag": "courses",
+    },
+  });
+}
 
 export default function Teaching() {
+  const { courses: allCourses } = useLoaderData<typeof loader>();
+
   return (
     <div className="py-6 sm:py-12 px-4 sm:px-8 text-neutral-900 leading-6">
       <ul className="list-none space-y-6 sm:space-y-8">
-        {COURSES.map((course) => (
-          <li key={course.name}>
+        {allCourses.map((course) => (
+          <li key={course.id}>
             <p className="text-lg text-neutral-800">
               {course.name}
               {course.semesters ? (
@@ -54,24 +40,6 @@ export default function Teaching() {
           </li>
         ))}
       </ul>
-
-      {SYLLABI.length > 0 && (
-        <div className="mt-12 sm:mt-16">
-          <ul className="list-none space-y-4">
-            {SYLLABI.map((syllabus) => (
-              <li key={syllabus.name}>
-                <a
-                  href={syllabus.file}
-                  download
-                  className="text-neutral-800 hover:underline decoration-neutral-600"
-                >
-                  {syllabus.name}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       <p className="mt-12 text-sm">
         Please{" "}

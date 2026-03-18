@@ -4,15 +4,15 @@ import { Reorder } from "framer-motion";
 import { useState } from "react";
 import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
-import { writings } from "~/db/schema";
+import { courses } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { invalidateCacheTags } from "~/lib/vercel-cache.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireAdminUser(request);
   const db = getDb();
-  const allWritings = await db.select().from(writings).orderBy(writings.sortOrder);
-  return json({ writings: allWritings });
+  const allCourses = await db.select().from(courses).orderBy(courses.sortOrder);
+  return json({ courses: allCourses });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -23,30 +23,37 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (intent === "delete") {
     const id = Number(formData.get("id"));
-    await db.delete(writings).where(eq(writings.id, id));
+    await db.delete(courses).where(eq(courses.id, id));
   }
 
   if (intent === "reorder-all") {
     const ids = String(formData.get("ids")).split(",").map(Number);
     await Promise.all(
       ids.map((id, index) =>
-        db.update(writings).set({ sortOrder: index + 1 }).where(eq(writings.id, id))
+        db.update(courses).set({ sortOrder: index + 1 }).where(eq(courses.id, id))
       )
     );
   }
 
-  await invalidateCacheTags("writings");
+  await invalidateCacheTags("courses");
   return json({ success: true });
 }
 
-export default function AdminWritings() {
-  const { writings: allWritings } = useLoaderData<typeof loader>();
-  const [items, setItems] = useState(allWritings);
+const navLinks = [
+  { to: "/admin/writings", label: "Writings" },
+  { to: "/admin/videos", label: "Videos" },
+  { to: "/admin/teaching", label: "Teaching" },
+  { to: "/admin/site-content", label: "Site Content" },
+];
+
+export default function AdminTeaching() {
+  const { courses: allCourses } = useLoaderData<typeof loader>();
+  const [items, setItems] = useState(allCourses);
   const fetcher = useFetcher();
 
   const handleDragEnd = () => {
     fetcher.submit(
-      { intent: "reorder-all", ids: items.map((w) => w.id).join(",") },
+      { intent: "reorder-all", ids: items.map((c) => c.id).join(",") },
       { method: "post" }
     );
   };
@@ -63,38 +70,24 @@ export default function AdminWritings() {
                 </Link>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <Link
-                  to="/admin/writings"
-                  className="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Writings
-                </Link>
-                <Link
-                  to="/admin/videos"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Videos
-                </Link>
-                <Link
-                  to="/admin/teaching"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Teaching
-                </Link>
-                <Link
-                  to="/admin/site-content"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Site Content
-                </Link>
+                {navLinks.map(({ to, label }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    className={
+                      to === "/admin/teaching"
+                        ? "border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                        : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                    }
+                  >
+                    {label}
+                  </Link>
+                ))}
               </div>
             </div>
             <div className="flex items-center">
               <Form method="post" action="/admin/logout">
-                <button
-                  type="submit"
-                  className="text-gray-500 hover:text-gray-700 text-sm font-medium"
-                >
+                <button type="submit" className="text-gray-500 hover:text-gray-700 text-sm font-medium">
                   Logout
                 </button>
               </Form>
@@ -106,12 +99,12 @@ export default function AdminWritings() {
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Writings</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Teaching</h2>
             <Link
-              to="/admin/writings/new"
+              to="/admin/teaching/new"
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
             >
-              Add New Writing
+              Add New Course
             </Link>
           </div>
 
@@ -122,49 +115,37 @@ export default function AdminWritings() {
               onReorder={setItems}
               className="divide-y divide-gray-200 list-none"
             >
-              {items.map((writing) => (
+              {items.map((course) => (
                 <Reorder.Item
-                  key={writing.id}
-                  value={writing}
+                  key={course.id}
+                  value={course}
                   onDragEnd={handleDragEnd}
                   className="bg-white"
                 >
                   <div className="px-4 py-4 flex items-center sm:px-6">
-                    <div
-                      className="mr-3 text-gray-300 cursor-grab active:cursor-grabbing select-none"
-                      title="Drag to reorder"
-                    >
+                    <div className="mr-3 text-gray-300 cursor-grab active:cursor-grabbing select-none" title="Drag to reorder">
                       ⠿
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-blue-600 truncate">
-                          {writing.title}
-                        </p>
-                      </div>
-                      <div className="mt-2 flex">
-                        <div className="flex items-center text-sm text-gray-500">
-                          <p>
-                            {writing.author} {writing.date && `• ${writing.date}`}
-                            {writing.source && ` • ${writing.source}`}
-                          </p>
-                        </div>
-                      </div>
+                      <p className="text-sm font-medium text-gray-900">{course.name}</p>
+                      {course.semesters && (
+                        <p className="mt-1 text-sm text-gray-500">{course.semesters}</p>
+                      )}
                     </div>
                     <div className="ml-5 flex-shrink-0 flex space-x-2">
                       <Link
-                        to={`/admin/writings/${writing.id}/edit`}
+                        to={`/admin/teaching/${course.id}/edit`}
                         className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
                       >
                         Edit
                       </Link>
                       <Form method="post" className="inline">
                         <input type="hidden" name="intent" value="delete" />
-                        <input type="hidden" name="id" value={writing.id} />
+                        <input type="hidden" name="id" value={course.id} />
                         <button
                           type="submit"
                           onClick={(e) => {
-                            if (!confirm("Are you sure you want to delete this writing?")) {
+                            if (!confirm("Are you sure you want to delete this course?")) {
                               e.preventDefault();
                             }
                           }}

@@ -11,6 +11,7 @@ export const writings = pgTable("writings", {
   document: text("document"), // PDF path
   documentName: text("document_name"),
   abstract: text("abstract"),
+  sortOrder: integer("sort_order").notNull().default(0),
 });
 
 // Table for videos
@@ -18,6 +19,15 @@ export const videos = pgTable("videos", {
   id: serial("id").primaryKey(),
   vimeoId: integer("vimeo_id").notNull(),
   title: text("title").notNull(),
+});
+
+// Table for teaching courses
+export const courses = pgTable("courses", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  semesters: text("semesters"),
+  description: text("description"),
+  sortOrder: integer("sort_order").notNull().default(0),
 });
 
 // Table for editable site content (bio, email, etc.)
