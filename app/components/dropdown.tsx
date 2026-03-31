@@ -8,7 +8,13 @@ const variants = {
   closed: { opacity: 0, height: 0 },
 };
 
-const Dropdown = ({ content }: { content: string }) => {
+const Dropdown = ({
+  content,
+  label = "Abstract",
+}: {
+  content: string;
+  label?: string;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -23,7 +29,7 @@ const Dropdown = ({ content }: { content: string }) => {
         )}
         onClick={handleToggle}
       >
-        Abstract
+        {label}
         <ChevronDown
           className={clsx(
             "transition-transform duration-500 text-neutral-700",

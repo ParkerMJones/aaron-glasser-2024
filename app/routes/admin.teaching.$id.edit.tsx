@@ -26,7 +26,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   await db.update(courses).set({
     name: formData.get("name") as string,
     semesters: (formData.get("semesters") as string) || null,
-    description: (formData.get("description") as string) || null,
+    description: (formData.get("description") as string).trim() || null,
   }).where(eq(courses.id, Number(params.id)));
 
   await invalidateCacheTags("courses");
