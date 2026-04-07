@@ -7,7 +7,7 @@ import { videos } from "~/db/schema";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const db = getDb();
-  const allVideos = await db.select().from(videos).orderBy(videos.id);
+  const allVideos = await db.select().from(videos).orderBy(videos.sortOrder);
   return json({ videos: allVideos });
 }
 

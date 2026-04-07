@@ -9,11 +9,13 @@ export async function loader() {
   const bioHeading = await db.select().from(siteContent).where(eq(siteContent.key, "bio_heading")).limit(1);
   const bioText = await db.select().from(siteContent).where(eq(siteContent.key, "bio_text")).limit(1);
   const email = await db.select().from(siteContent).where(eq(siteContent.key, "email")).limit(1);
+  const cvUrl = await db.select().from(siteContent).where(eq(siteContent.key, "cv_url")).limit(1);
 
   return json({
     bioHeading: bioHeading[0]?.value || "Aaron Glasser",
     bioText: bioText[0]?.value || "",
     email: email[0]?.value || "agmail@umich.edu",
+    cvUrl: cvUrl[0]?.value || null,
   }, {
     headers: {
       "Cache-Control": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400",
@@ -23,7 +25,7 @@ export async function loader() {
 }
 
 export default function Index() {
-  const { bioHeading, bioText, email } = useLoaderData<typeof loader>();
+  const { bioHeading, bioText, email, cvUrl } = useLoaderData<typeof loader>();
 
   return (
     <div className="text-neutral-800 leading-6 flex flex-col items-center flex-1 px-8 pt-8 sm:pt-12 gap-y-6 max-w-[55ch] mx-auto">
@@ -44,17 +46,19 @@ export default function Index() {
             {email}
           </a>
         </p>
-        <p>
-          cv:{" "}
-          <a
-            className="underline decoration-neutral-800"
-            href="/documents/cv.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            download
-          </a>
-        </p>
+        {cvUrl && (
+          <p>
+            cv:{" "}
+            <a
+              className="underline decoration-neutral-800"
+              href={cvUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              download
+            </a>
+          </p>
+        )}
       </div>
     </div>
   );

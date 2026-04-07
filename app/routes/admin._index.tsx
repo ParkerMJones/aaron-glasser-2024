@@ -2,7 +2,7 @@ import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
-import { writings, videos, siteContent } from "~/db/schema";
+import { writings, videos, siteContent, courses } from "~/db/schema";
 import { sql } from "drizzle-orm";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -10,10 +10,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const db = getDb();
 
-  const [writingsCount, videosCount, siteContentCount] = await Promise.all([
+  const [writingsCount, videosCount, siteContentCount, coursesCount] = await Promise.all([
     db.select({ count: sql<number>`count(*)` }).from(writings),
     db.select({ count: sql<number>`count(*)` }).from(videos),
     db.select({ count: sql<number>`count(*)` }).from(siteContent),
+    db.select({ count: sql<number>`count(*)` }).from(courses),
   ]);
 
   return json({
@@ -21,6 +22,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       writings: Number(writingsCount[0].count),
       videos: Number(videosCount[0].count),
       siteContent: Number(siteContentCount[0].count),
+      courses: Number(coursesCount[0].count),
     },
   });
 }
@@ -51,6 +53,12 @@ export default function AdminDashboard() {
                   Videos
                 </Link>
                 <Link
+                  to="/admin/teaching"
+                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                >
+                  Teaching
+                </Link>
+                <Link
                   to="/admin/site-content"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
@@ -74,7 +82,7 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <div className="bg-white overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <div className="flex items-center">
@@ -155,6 +163,50 @@ export default function AdminDashboard() {
                 <div className="text-sm">
                   <Link
                     to="/admin/videos"
+                    className="font-medium text-blue-600 hover:text-blue-500"
+                  >
+                    Manage
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white overflow-hidden shadow rounded-lg">
+              <div className="p-5">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="h-6 w-6 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt className="text-sm font-medium text-gray-500 truncate">
+                        Teaching
+                      </dt>
+                      <dd className="flex items-baseline">
+                        <div className="text-2xl font-semibold text-gray-900">
+                          {stats.courses}
+                        </div>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-5 py-3">
+                <div className="text-sm">
+                  <Link
+                    to="/admin/teaching"
                     className="font-medium text-blue-600 hover:text-blue-500"
                   >
                     Manage

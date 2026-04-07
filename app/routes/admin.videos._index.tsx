@@ -1,5 +1,7 @@
 import { json, type LoaderFunctionArgs, type ActionFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
+import { Reorder } from "framer-motion";
+import { useState } from "react";
 import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
 import { videos } from "~/db/schema";
@@ -8,7 +10,7 @@ import { eq } from "drizzle-orm";
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireAdminUser(request);
   const db = getDb();
-  const allVideos = await db.select().from(videos).orderBy(videos.id);
+  const allVideos = await db.select().from(videos).orderBy(videos.sortOrder);
   return json({ videos: allVideos });
 }
 
@@ -23,11 +25,37 @@ export async function action({ request }: ActionFunctionArgs) {
     await db.delete(videos).where(eq(videos.id, id));
   }
 
+  if (intent === "reorder-all") {
+    const ids = String(formData.get("ids")).split(",").map(Number);
+    await Promise.all(
+      ids.map((id, index) =>
+        db.update(videos).set({ sortOrder: index + 1 }).where(eq(videos.id, id))
+      )
+    );
+  }
+
   return json({ success: true });
 }
 
 export default function AdminVideos() {
   const { videos: allVideos } = useLoaderData<typeof loader>();
+  const [items, setItems] = useState(allVideos);
+  const [isDirty, setIsDirty] = useState(false);
+  const fetcher = useFetcher<typeof action>();
+  const isSaving = fetcher.state !== "idle";
+
+  const handleReorder = (newOrder: typeof items) => {
+    setItems(newOrder);
+    setIsDirty(true);
+  };
+
+  const handleSaveOrder = () => {
+    fetcher.submit(
+      { intent: "reorder-all", ids: items.map((v) => v.id).join(",") },
+      { method: "post" }
+    );
+    setIsDirty(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -85,19 +113,38 @@ export default function AdminVideos() {
         <div className="px-4 py-6 sm:px-0">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Videos</h2>
-            <Link
-              to="/admin/videos/new"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-            >
-              Add New Video
-            </Link>
+            <div className="flex items-center gap-3">
+              {isDirty && (
+                <button
+                  onClick={handleSaveOrder}
+                  disabled={isSaving}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isSaving ? "Saving..." : "Save Order"}
+                </button>
+              )}
+              <Link
+                to="/admin/videos/new"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              >
+                Add New Video
+              </Link>
+            </div>
           </div>
 
           <div className="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul className="divide-y divide-gray-200">
-              {allVideos.map((video) => (
-                <li key={video.id}>
+            <Reorder.Group
+              axis="y"
+              values={items}
+              onReorder={handleReorder}
+              className="divide-y divide-gray-200 list-none"
+            >
+              {items.map((video) => (
+                <Reorder.Item key={video.id} value={video} className="bg-white">
                   <div className="px-4 py-4 flex items-center sm:px-6">
+                    <div className="mr-3 text-gray-300 cursor-grab active:cursor-grabbing select-none" title="Drag to reorder">
+                      ⠿
+                    </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-medium text-blue-600 truncate">
@@ -134,9 +181,9 @@ export default function AdminVideos() {
                       </Form>
                     </div>
                   </div>
-                </li>
+                </Reorder.Item>
               ))}
-            </ul>
+            </Reorder.Group>
           </div>
         </div>
       </div>

@@ -19,6 +19,7 @@ export const videos = pgTable("videos", {
   id: serial("id").primaryKey(),
   vimeoId: integer("vimeo_id").notNull(),
   title: text("title").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
 });
 
 // Table for teaching courses
@@ -27,6 +28,13 @@ export const courses = pgTable("courses", {
   name: text("name").notNull(),
   semesters: text("semesters"),
   description: text("description"),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+// Table for works-in-progress research entries
+export const worksInProgress = pgTable("works_in_progress", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
