@@ -4,17 +4,6 @@ import { getDb } from "~/db/client";
 import { writings, worksInProgress } from "~/db/schema";
 import { asc } from "drizzle-orm";
 
-function formatCoAuthors(author: string | null) {
-  if (!author) return null;
-  const list = author
-    .split(/[,&]/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-  if (list.length <= 1) return null;
-  if (list.length === 2) return `${list[0]} & ${list[1]}`;
-  return `${list.slice(0, -1).join(", ")} & ${list[list.length - 1]}`;
-}
-
 export async function loader() {
   const db = getDb();
   const [allWritings, allWip] = await Promise.all([
@@ -39,32 +28,26 @@ export default function Research() {
         <div>
           <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">Papers</h2>
           <ul className="list-none space-y-2">
-            {sortedWritings.map((writing) => {
-              const coAuthors = formatCoAuthors(writing.author);
-              return (
-                <li key={writing.id}>
-                  <Link
-                    className="block text-lg text-neutral-800 hover:underline decoration-neutral-600"
-                    to={`/research/${writing.id}`}
-                  >
-                    <span>{writing.title}</span>
-                    {writing.date ? <span> ({writing.date})</span> : null}
-                    {writing.source ? (
-                      <>
-                        {" "}
-                        <span className="italic">{writing.source}</span>
-                      </>
-                    ) : null}
-                    {coAuthors ? (
-                      <span className="text-sm text-zinc-400">
-                        {" "}
-                        (co-authored: {coAuthors})
-                      </span>
-                    ) : null}
-                  </Link>
-                </li>
-              );
-            })}
+            {sortedWritings.map((writing) => (
+              <li key={writing.id}>
+                <Link
+                  className="block text-lg text-neutral-800 hover:underline decoration-neutral-600"
+                  to={`/research/${writing.id}`}
+                >
+                  <span>{writing.title}</span>
+                  {writing.date ? <span> ({writing.date})</span> : null}
+                  {writing.source ? (
+                    <>
+                      {" "}
+                      <span className="italic">{writing.source}</span>
+                    </>
+                  ) : null}
+                  {writing.author ? (
+                    <span className="text-sm text-zinc-400"> {writing.author}</span>
+                  ) : null}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 

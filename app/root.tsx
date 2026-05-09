@@ -9,6 +9,7 @@ import {
   useRouteError,
   isRouteErrorResponse,
   useNavigation,
+  useRevalidator,
 } from "@remix-run/react";
 import "./tailwind.css";
 import Navbar from "./components/navbar";
@@ -89,12 +90,21 @@ export function ErrorBoundary() {
 export default function App() {
   const location = useLocation();
   const navigation = useNavigation();
+  const revalidator = useRevalidator();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     setIsHydrated(true);
   }, []);
+
+  useEffect(() => {
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) revalidator.revalidate();
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, [revalidator]);
 
   // Only hide during client-side navigations, not on initial render
   const isNavigating = isHydrated && navigation.state !== "idle";
