@@ -10,22 +10,24 @@ export async function loader() {
   const bioText = await db.select().from(siteContent).where(eq(siteContent.key, "bio_text")).limit(1);
   const email = await db.select().from(siteContent).where(eq(siteContent.key, "email")).limit(1);
   const cvUrl = await db.select().from(siteContent).where(eq(siteContent.key, "cv_url")).limit(1);
+  const homeImageUrl = await db.select().from(siteContent).where(eq(siteContent.key, "home_image_url")).limit(1);
 
   return json({
     bioHeading: bioHeading[0]?.value || "Aaron Glasser",
     bioText: bioText[0]?.value || "",
     email: email[0]?.value || "agmail@umich.edu",
     cvUrl: cvUrl[0]?.value || null,
+    homeImageUrl: homeImageUrl[0]?.value || null,
   }, {
     headers: {
-      "Cache-Control": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400",
+      "Cache-Control": "public, max-age=0, s-maxage=31536000",
       "Cache-Tag": "site_content",
     },
   });
 }
 
 export default function Index() {
-  const { bioHeading, bioText, email, cvUrl } = useLoaderData<typeof loader>();
+  const { bioHeading, bioText, email, cvUrl, homeImageUrl } = useLoaderData<typeof loader>();
 
   return (
     <div className="text-neutral-800 leading-6 flex flex-col items-center flex-1 px-8 pt-8 sm:pt-12 gap-y-6 max-w-[55ch] mx-auto">
@@ -33,7 +35,7 @@ export default function Index() {
       <p className="text-justify">{bioText}</p>
       <img
         className="object-contain w-40 h-auto"
-        src="/BioPic.jpeg"
+        src={homeImageUrl || "/BioPic.jpeg"}
         alt="Aaron Glasser"
       />
       <div className="flex flex-col items-center gap-y-2 text-sm">

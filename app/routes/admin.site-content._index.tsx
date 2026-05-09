@@ -25,10 +25,11 @@ export async function action({ request }: ActionFunctionArgs) {
   if (contentType.includes("multipart/form-data")) {
     const uploadHandler = unstable_createMemoryUploadHandler({ maxPartSize: 20_000_000 });
     const formData = await unstable_parseMultipartFormData(request, uploadHandler);
-    const file = formData.get("cv") as File | null;
+    const cvFile = formData.get("cv") as File | null;
+    const homeImageFile = formData.get("home_image") as File | null;
 
-    if (file && file.size > 0) {
-      const blob = await put("cv.pdf", file, { access: "public", allowOverwrite: true });
+    if (cvFile && cvFile.size > 0) {
+      const blob = await put("cv.pdf", cvFile, { access: "public", allowOverwrite: true });
       const existing = await db.select().from(siteContent).where(eq(siteContent.key, "cv_url")).limit(1);
       if (existing.length > 0) {
         await db.update(siteContent).set({ value: blob.url }).where(eq(siteContent.key, "cv_url"));
@@ -37,6 +38,23 @@ export async function action({ request }: ActionFunctionArgs) {
       }
       await invalidateCacheTags("site_content");
     }
+
+    if (homeImageFile && homeImageFile.size > 0) {
+      const blob = await put("home-image", homeImageFile, {
+        access: "public",
+        allowOverwrite: true,
+        addRandomSuffix: false,
+        contentType: homeImageFile.type || undefined,
+      });
+      const existing = await db.select().from(siteContent).where(eq(siteContent.key, "home_image_url")).limit(1);
+      if (existing.length > 0) {
+        await db.update(siteContent).set({ value: blob.url }).where(eq(siteContent.key, "home_image_url"));
+      } else {
+        await db.insert(siteContent).values({ key: "home_image_url", value: blob.url, label: "Home Page Image URL" });
+      }
+      await invalidateCacheTags("site_content");
+    }
+
     return json({ success: true });
   }
 
@@ -138,7 +156,7 @@ function CvUploadForm({ currentUrl }: { currentUrl: string | null }) {
   const wasSubmittingRef = useRef(false);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const isSubmitting = navigation.state === "submitting";
+  const isSubmitting = navigation.state === "submitting" && navigation.formData?.has("cv") === true;
 
   useEffect(() => {
     if (isSubmitting) {
@@ -196,10 +214,75 @@ function CvUploadForm({ currentUrl }: { currentUrl: string | null }) {
   );
 }
 
+function HomeImageUploadForm({ currentUrl }: { currentUrl: string | null }) {
+  const navigation = useNavigation();
+  const [showSuccess, setShowSuccess] = useState(false);
+  const wasSubmittingRef = useRef(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const isSubmitting = navigation.state === "submitting" && navigation.formData?.has("home_image") === true;
+
+  useEffect(() => {
+    if (isSubmitting) {
+      wasSubmittingRef.current = true;
+    }
+    if (wasSubmittingRef.current && navigation.state === "idle") {
+      wasSubmittingRef.current = false;
+      setShowSuccess(true);
+      if (formRef.current) formRef.current.reset();
+      const timer = setTimeout(() => setShowSuccess(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSubmitting, navigation.state]);
+
+  return (
+    <Form method="post" encType="multipart/form-data" ref={formRef} className="bg-white shadow sm:rounded-lg p-6">
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Home Page Image</label>
+          {currentUrl && (
+            <p className="text-xs text-gray-500 mt-1">
+              Current:{" "}
+              <a href={currentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                view image
+              </a>
+            </p>
+          )}
+        </div>
+        <div>
+          <input
+            type="file"
+            name="home_image"
+            accept="image/jpeg,image/png,image/webp"
+            className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+        </div>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={isSubmitting || showSuccess}
+            className="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+          >
+            {showSuccess ? (
+              <>
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Uploaded!
+              </>
+            ) : isSubmitting ? "Uploading..." : "Upload Image"}
+          </button>
+        </div>
+      </div>
+    </Form>
+  );
+}
+
 export default function AdminSiteContent() {
   const { content } = useLoaderData<typeof loader>();
   const cvEntry = content.find((c) => c.key === "cv_url");
-  const otherContent = content.filter((c) => c.key !== "cv_url");
+  const homeImageEntry = content.find((c) => c.key === "home_image_url");
+  const otherContent = content.filter((c) => c.key !== "cv_url" && c.key !== "home_image_url");
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -261,6 +344,7 @@ export default function AdminSiteContent() {
             {otherContent.map((item) => (
               <ContentForm key={item.id} item={item} />
             ))}
+            <HomeImageUploadForm currentUrl={homeImageEntry?.value ?? null} />
             <CvUploadForm currentUrl={cvEntry?.value ?? null} />
           </div>
         </div>
