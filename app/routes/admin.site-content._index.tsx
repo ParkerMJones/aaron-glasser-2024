@@ -7,7 +7,6 @@ import { getDb } from "~/db/client";
 import { siteContent } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { useEffect, useState, useRef } from "react";
-import { invalidateCacheTags } from "~/lib/vercel-cache.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireAdminUser(request);
@@ -36,7 +35,6 @@ export async function action({ request }: ActionFunctionArgs) {
       } else {
         await db.insert(siteContent).values({ key: "cv_url", value: blob.url, label: "CV Document URL" });
       }
-      await invalidateCacheTags("site_content");
     }
 
     if (homeImageFile && homeImageFile.size > 0) {
@@ -52,7 +50,6 @@ export async function action({ request }: ActionFunctionArgs) {
       } else {
         await db.insert(siteContent).values({ key: "home_image_url", value: blob.url, label: "Home Page Image URL" });
       }
-      await invalidateCacheTags("site_content");
     }
 
     return json({ success: true });
@@ -65,7 +62,6 @@ export async function action({ request }: ActionFunctionArgs) {
     const id = Number(formData.get("id"));
     const value = formData.get("value") as string;
     await db.update(siteContent).set({ value }).where(eq(siteContent.id, id));
-    await invalidateCacheTags("site_content");
   }
 
   return json({ success: true });

@@ -12,15 +12,7 @@ export async function loader() {
     .select()
     .from(courses)
     .orderBy(asc(courses.sortOrder));
-  return json(
-    { courses: allCourses },
-    {
-      headers: {
-        "Cache-Control": "public, max-age=0, s-maxage=31536000",
-        "Cache-Tag": "courses",
-      },
-    }
-  );
+  return json({ courses: allCourses });
 }
 
 export default function Teaching() {

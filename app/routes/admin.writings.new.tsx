@@ -5,7 +5,6 @@ import { unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } f
 import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
 import { writings } from "~/db/schema";
-import { invalidateCacheTags } from "~/lib/vercel-cache.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireAdminUser(request);
@@ -40,7 +39,6 @@ export async function action({ request }: ActionFunctionArgs) {
     abstract: (formData.get("abstract") as string) || null,
   });
 
-  await invalidateCacheTags("writings");
   return redirect("/admin/writings");
 }
 

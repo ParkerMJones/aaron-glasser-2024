@@ -4,7 +4,6 @@ import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
 import { worksInProgress } from "~/db/schema";
 import { eq } from "drizzle-orm";
-import { invalidateCacheTags } from "~/lib/vercel-cache.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireAdminUser(request);
@@ -24,13 +23,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   if (intent === "delete") {
     await db.delete(worksInProgress).where(eq(worksInProgress.id, id));
-    await invalidateCacheTags("works-in-progress");
     return redirect("/admin/writings");
   }
 
   const title = String(formData.get("title")).trim();
   await db.update(worksInProgress).set({ title }).where(eq(worksInProgress.id, id));
-  await invalidateCacheTags("works-in-progress");
 
   return redirect("/admin/writings");
 }

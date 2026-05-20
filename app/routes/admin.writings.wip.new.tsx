@@ -3,7 +3,6 @@ import { Form, Link, useNavigation } from "@remix-run/react";
 import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
 import { worksInProgress } from "~/db/schema";
-import { invalidateCacheTags } from "~/lib/vercel-cache.server";
 import { sql } from "drizzle-orm";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -22,7 +21,6 @@ export async function action({ request }: ActionFunctionArgs) {
     .from(worksInProgress);
 
   await db.insert(worksInProgress).values({ title, sortOrder: maxOrder + 1 });
-  await invalidateCacheTags("works-in-progress");
 
   return redirect("/admin/writings");
 }

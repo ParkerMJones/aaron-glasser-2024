@@ -10,12 +10,7 @@ export async function loader() {
     db.select().from(writings).orderBy(asc(writings.sortOrder)),
     db.select().from(worksInProgress).orderBy(asc(worksInProgress.sortOrder)),
   ]);
-  return json({ writings: allWritings, worksInProgress: allWip }, {
-    headers: {
-      "Cache-Control": "public, max-age=0, s-maxage=31536000",
-      "Cache-Tag": "writings,works-in-progress",
-    },
-  });
+  return json({ writings: allWritings, worksInProgress: allWip });
 }
 
 export default function Research() {
@@ -31,7 +26,7 @@ export default function Research() {
             {sortedWritings.map((writing) => (
               <li key={writing.id}>
                 <Link
-                  className="block text-lg text-neutral-800 hover:underline decoration-neutral-600"
+                  className="block text-lg text-neutral-800 hover:underline decoration-neutral-600 pl-6 -indent-6"
                   to={`/research/${writing.id}`}
                 >
                   <span>{writing.title}</span>
@@ -42,9 +37,10 @@ export default function Research() {
                       <span className="italic">{writing.source}</span>
                     </>
                   ) : null}
-                  {writing.author ? (
-                    <span className="text-sm text-zinc-400"> {writing.author}</span>
+                  {writing.author?.trim() ? (
+                    <span className="text-sm"> {writing.author.trim()}</span>
                   ) : null}
+                  <span>.</span>
                 </Link>
               </li>
             ))}

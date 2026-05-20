@@ -6,7 +6,6 @@ import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
 import { writings } from "~/db/schema";
 import { eq } from "drizzle-orm";
-import { invalidateCacheTags } from "~/lib/vercel-cache.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireAdminUser(request);
@@ -50,7 +49,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
     abstract: (formData.get("abstract") as string) || null,
   }).where(eq(writings.id, Number(params.id)));
 
-  await invalidateCacheTags("writings");
   return json({ success: true });
 }
 

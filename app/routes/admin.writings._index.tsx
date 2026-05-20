@@ -6,8 +6,6 @@ import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
 import { writings, worksInProgress } from "~/db/schema";
 import { eq } from "drizzle-orm";
-import { invalidateCacheTags } from "~/lib/vercel-cache.server";
-
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireAdminUser(request);
@@ -28,7 +26,6 @@ export async function action({ request }: ActionFunctionArgs) {
   if (intent === "delete") {
     const id = Number(formData.get("id"));
     await db.delete(writings).where(eq(writings.id, id));
-    await invalidateCacheTags("writings");
   }
 
   if (intent === "reorder-all") {
@@ -38,13 +35,11 @@ export async function action({ request }: ActionFunctionArgs) {
         db.update(writings).set({ sortOrder: index + 1 }).where(eq(writings.id, id))
       )
     );
-    await invalidateCacheTags("writings");
   }
 
   if (intent === "delete-wip") {
     const id = Number(formData.get("id"));
     await db.delete(worksInProgress).where(eq(worksInProgress.id, id));
-    await invalidateCacheTags("works-in-progress");
   }
 
   if (intent === "reorder-wip") {
@@ -54,7 +49,6 @@ export async function action({ request }: ActionFunctionArgs) {
         db.update(worksInProgress).set({ sortOrder: index + 1 }).where(eq(worksInProgress.id, id))
       )
     );
-    await invalidateCacheTags("works-in-progress");
   }
 
   return json({ success: true });

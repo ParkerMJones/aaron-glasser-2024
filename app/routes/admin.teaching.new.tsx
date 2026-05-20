@@ -3,7 +3,6 @@ import { Form, Link, useNavigation } from "@remix-run/react";
 import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
 import { courses } from "~/db/schema";
-import { invalidateCacheTags } from "~/lib/vercel-cache.server";
 import { max } from "drizzle-orm";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -25,7 +24,6 @@ export async function action({ request }: ActionFunctionArgs) {
     sortOrder: (maxOrder ?? 0) + 1,
   });
 
-  await invalidateCacheTags("courses");
   return redirect("/admin/teaching");
 }
 

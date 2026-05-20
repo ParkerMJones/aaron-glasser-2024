@@ -6,7 +6,6 @@ import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
 import { courses } from "~/db/schema";
 import { eq } from "drizzle-orm";
-import { invalidateCacheTags } from "~/lib/vercel-cache.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireAdminUser(request);
@@ -35,7 +34,6 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 
-  await invalidateCacheTags("courses");
   return json({ success: true });
 }
 

@@ -18,11 +18,6 @@ export async function loader() {
     email: email[0]?.value || "agmail@umich.edu",
     cvUrl: cvUrl[0]?.value || null,
     homeImageUrl: homeImageUrl[0]?.value || null,
-  }, {
-    headers: {
-      "Cache-Control": "public, max-age=0, s-maxage=31536000",
-      "Cache-Tag": "site_content",
-    },
   });
 }
 

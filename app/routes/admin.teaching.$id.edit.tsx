@@ -4,7 +4,6 @@ import { requireAdminUser } from "~/utils/session.server";
 import { getDb } from "~/db/client";
 import { courses } from "~/db/schema";
 import { eq } from "drizzle-orm";
-import { invalidateCacheTags } from "~/lib/vercel-cache.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireAdminUser(request);
@@ -28,8 +27,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
     semesters: (formData.get("semesters") as string) || null,
     description: (formData.get("description") as string).trim() || null,
   }).where(eq(courses.id, Number(params.id)));
-
-  await invalidateCacheTags("courses");
 
   return json({ success: true });
 }
